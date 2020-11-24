@@ -1,0 +1,273 @@
+package Ex1;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.ObjectInputStream;
+import java.io.PrintWriter;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+public class WGraph_Algo implements weighted_graph_algorithms {
+     private weighted_graph graph;
+    // HashMap<Integer, HashMap<Integer,Double>> neighbors=new HashMap<Integer,HashMap<Integer,Double>>();
+	public WGraph_Algo(weighted_graph graph) {
+		this.graph = graph;
+	}
+
+	@Override
+	public void init(weighted_graph g) {
+	   this.graph=g;
+	}
+	@Override
+	public weighted_graph getGraph() {
+	     return graph;
+	}
+
+	@Override
+	public weighted_graph copy() {
+		weighted_graph g=this.graph;
+	    return g;
+	}
+	
+	@Override
+	public boolean isConnected() {
+	  if(this.graph.nodeSize()==0) {//if we dont have any age
+		return true;
+	  }
+	  HashMap <node_info,String>color=new HashMap<node_info,String>();//we save color and info
+	 
+	     node_info p=null;//we take some node_info to start
+	     //we change all the nodes to be white
+		for (node_info allnebor:this.graph.getV()) {
+			color.put(allnebor, "w");
+			p=allnebor;
+		}
+            color.replace(p,"w", "G");//repalce the p for when we stats
+		    
+			Queue<node_info> q = new LinkedList<node_info>();
+			
+			q.add(p);
+			
+			while (!q.isEmpty()) {
+				node_info u = q.poll();
+				
+		        int b=Integer.parseInt(u.getInfo());//we need the key of u to go all the nebiros of u
+				for (node_info f:this.graph.getV(b)){
+					if (color.get(f).equals( "WHITE")) {
+						color.replace(f,"WHITE","GRAY");//we chage to gray
+						f.setInfo("GRAY");
+						q.add(f);
+					}
+				}
+				//after we step all over the nebors we chage black
+				color.get(u).replace("GRAY", "BLACK");
+				u.setInfo("BLACK");
+			}
+			//			
+			for (node_info allnebor:this.graph.getV()) {
+				if(allnebor.getInfo().equals("WHITE")) {
+					return false;
+				}
+			}
+			return true;
+		}
+	@Override
+	public double shortestPathDist(int src, int dest) {
+		 if(this.graph.nodeSize()==0) {//if we dont have any path
+				return -1;
+			  }
+		 
+			  HashMap <node_info,String>color=new HashMap<node_info,String>();//we save color and node_info
+			 
+			     node_info start=null;//from where we start src
+			     node_info end=null;//target
+			     //we pass all the graph and change color and tag to max value
+			     //and we give value to start and to the end
+				for (node_info allnebor:this.graph.getV()) {
+					if(allnebor.getInfo().equals(this.getGraph().getNode(src).getInfo())){
+						allnebor.setTag(Double.MAX_VALUE);
+						start=allnebor;
+						color.put(allnebor, "w");
+					}
+					if(allnebor.getInfo().equals(this.getGraph().getNode(dest).getInfo())) {
+						allnebor.setTag(Double.MAX_VALUE);
+						end=allnebor;
+						color.put(allnebor, "w");
+					}
+					allnebor.setTag(Double.MAX_VALUE);
+					color.put(allnebor, "w");
+				}
+				
+				HashMap<node_info,Double>soultion=new HashMap<node_info,Double>();//this hash for soultion the path and double	
+				Double solve=0.0;//this solve doing some sum
+				HashMap<Double,node_info>temp=new HashMap<Double,node_info>();//this hash is Temporary  
+				    start.setTag(-1.0);//change tag becasue is we start
+				    color.replace(start, "G");//change to gray
+					Queue<node_info> q = new LinkedList<node_info>();
+					
+					q.add(start);
+					
+					while (!q.isEmpty()) {
+						node_info u = q.poll();
+						
+				        int b=Integer.parseInt(u.getInfo());//we need to go all over nebors
+				        Double []counter=new Double[this.graph.getV(b).size()]; //this is for all nebors of this node u   
+				        for (int j = 0; j < counter.length; j++) {
+							counter[j]=-1.0;//give all the nebors -1
+						}
+				        int i=0;//this is to step over to new index in arr
+				        Double min=0.0;//this to find min every time in the niberos
+						for (node_info f:this.graph.getV(b)){
+							if (color.get(f).equals("w")) {
+								color.replace(f,"w","G");
+								
+								int v=Integer.parseInt(f.getInfo());//this we want the adge between the place we are and the nebor
+								counter[i]=this.getGraph().getEdge(b,v);
+		                         min=counter[i];//give some min
+		                         temp.put(min, f);//we put this on temp
+							    i++;
+							}
+						}
+						//this for is to give me the min edge between b and f adge
+						for (int j = 0; j < counter.length; j++) {
+						 if(min>counter[j]&&counter[j]!=-1.0) {
+							 min=counter[j];
+						 }
+						}
+						solve+=min;//we put the min value to solve
+						node_info c= temp.get(min);//if we want the path
+						soultion.put(c,min);//this hir we have the min and the path
+						q.add(c);//add new nebor to the queue the minimum 
+						color.get(u).replace("G", "B");//when we done of this nebor we change the color to black
+						u.setInfo("BLACK");
+						temp.clear();//we clear the temp for the next nebor
+						if(c.getInfo().equals(end.getInfo())) {
+							return solve;//the solve
+						}
+					}					
+		 return -1.0;
+	}
+
+	@Override
+	public List<node_info> shortestPath(int src, int dest) {
+		
+		if(this.graph.nodeSize()==0) {//if node size ==0 we dont have path 
+			return null;
+		  }
+		List<node_info>path=new LinkedList<node_info>();
+		  HashMap <node_info,String>color=new HashMap<node_info,String>();//we save color and node_info
+		 
+		     node_info start=null;//save the start is src
+		     node_info end=null;//save the dest
+		     
+			for (node_info allnebor:this.graph.getV()) {//give all nebor color w and change the tag to max value
+				if(allnebor.getInfo().equals(this.getGraph().getNode(src).getInfo())){
+					allnebor.setTag(Double.MAX_VALUE);
+					start=allnebor;
+					color.put(allnebor, "w");
+				}
+				if(allnebor.getInfo().equals(this.getGraph().getNode(dest).getInfo())) {
+					allnebor.setTag(Double.MAX_VALUE);
+					end=allnebor;
+					color.put(allnebor, "w");
+				}
+				allnebor.setTag(Double.MAX_VALUE);
+				color.put(allnebor, "w");
+			}
+			//HashMap<node_info,Double>soultion=new HashMap<node_info,Double>();	//
+			//Double solve=0.0;
+			HashMap<Double,node_info>temp=new HashMap<Double,node_info>();//this for temporary variable
+			    path.add(start);
+			    start.setTag(-1.0);//change the tag beacuse hir we start
+			    color.replace(start, "G");
+				Queue<node_info> q = new LinkedList<node_info>();
+				
+				q.add(start);
+				
+				while (!q.isEmpty()) {
+					node_info u = q.poll();
+					
+			        int b=Integer.parseInt(u.getInfo());
+			        Double []arr=new Double[this.graph.getV(b).size()];//this is for all nebor that we are on it is u 
+			        //all is -1
+			        for (int j = 0; j < arr.length; j++) {
+						arr[j]=-1.0;
+					}
+			        int i=0;//this is for to get to the next index on the arr
+			        Double min=0.0;// give some min 
+			        //change color
+					for (node_info f:this.graph.getV(b)){
+						if (color.get(f).equals("w")) {
+							color.replace(f,"w","G");
+							//get the agde and put in arr
+							int v=Integer.parseInt(f.getInfo());
+							arr[i]=this.getGraph().getEdge(b,v);
+	                         min=arr[i];
+	                         temp.put(min, f);
+						    i++;
+						}
+					}
+					//give me the min of all the nebors of u
+					for (int j = 0; j < arr.length; j++) {
+					 if(min>arr[j]&&arr[j]!=-1.0) {
+						 min=arr[j];
+					 }
+					}
+					//this is for to get the value for min and we save the node_info in temp
+					//after we save the min we clear temp and then we going to the next u and add for queue
+					//after that we change the color and then we ask if we in the end of the graph
+					node_info c= temp.get(min);
+					q.add(c);
+					path.add(c);
+					color.get(u).replace("G", "B");
+					u.setInfo("BLACK");
+					temp.clear();
+					if(c.getInfo().equals(end.getInfo())) {
+					  
+						return path;
+					}
+				}					
+	 return null;	
+	}
+
+	@Override
+	public boolean save(String file) {
+		 
+		 try{
+			PrintWriter pw=new PrintWriter(new File("may include a relative path"));
+			for (node_info node: this.graph.getV()) {
+				int v=Integer.parseInt(node.getInfo());
+				String str=this.graph.getNode(v)+"---->";
+				pw.write(str);
+			}
+			pw.close();
+			return true;
+		 }
+		 catch(FileNotFoundException e) {
+			return false;
+		 }
+	
+	}
+
+	@Override
+	public boolean load(String file) {
+		
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            this.graph= (weighted_graph) objectInputStream.readObject();
+            objectInputStream.close();
+            fileInputStream.close();
+        }
+        catch (Exception e){
+            return false;
+        }
+        return true;		
+	}
+	
+}
