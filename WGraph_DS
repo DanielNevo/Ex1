@@ -1,0 +1,229 @@
+package Ex1;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+import sun.tools.tree.ThisExpression;
+
+public class WGraph_DS implements weighted_graph  {
+	private int countermc;//
+	private double wight; 
+	HashMap<Integer,node_info> graph=new HashMap<Integer,node_info>();
+	HashMap<Integer, HashMap<Integer,Double>> neighbors=new HashMap<Integer,HashMap<Integer,Double>>();
+	private int edgeSize;//
+	//private double tag;
+	 static int z=1;
+	//------------------------------------------------------- ----------	
+	public class Node implements node_info  {
+		private int key_id; 
+		private String info;
+		private double tag;
+	    private int sec;
+		
+
+		public void setkey(int k) {
+			this.key_id=k;
+		}
+		public int getsec() {
+			return this.sec;
+		}
+		public void getsec(int k) {
+			this.sec=k;
+		}
+
+		@Override
+		public int getKey() { 
+		  this.key_id=z;
+		  z++;
+		  return this.key_id;
+		}
+
+		@Override
+		public String getInfo() {
+			return info;
+		}
+
+		@Override
+		public void setInfo(String s) {
+			this.info=s;
+		}
+
+		@Override
+		public double getTag() {
+			return tag;
+		}
+
+		@Override
+		public void setTag(double t) {
+			this.tag=t;
+		}
+		
+	}
+	//--------------------------------------------------------------------node end
+	public WGraph_DS() {
+		this.graph=new HashMap<Integer,node_info>();
+		
+	}		 
+	
+	
+	@Override
+	public node_info getNode(int key) {
+		if(this.graph.containsKey(key)) {
+			return this.graph.get(key);  
+		}
+		return null;
+	}
+	@Override
+	
+	public boolean hasEdge(int node1, int node2) {
+		if(this.getNode(node1)==null||this.getNode(node2)==null) {//if some node not in graph return null
+			return false;
+		}
+		//if some node is null and 
+		if(this.neighbors.get(node1)==null||this.neighbors.get(node2)==null) {
+			return false;
+		}
+		///if is in the graph and in the neigbor node and and node return true
+		if(this.graph.containsKey(node1)&&this.graph.containsKey(node2)) {
+			if(this.neighbors.get(node1).containsKey(node2)&&this.neighbors.get(node2).containsKey(node1)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	@Override
+	public double getEdge(int node1, int node2) {
+		if(this.hasEdge(node1, node2)) {
+			return this.neighbors.get(node1).get(node2);
+		}
+		return -1;
+	}
+	@Override
+	
+	public void addNode(int key) {
+		if(!this.graph.containsKey(key)&&!this.neighbors.containsKey(key)) {//we cheack if is in the graph or nebighbors
+			Node f=new Node();//we doing new one
+			f.setkey(key);//give them set the key
+			String q="";
+			q+=key;
+			f.setInfo(q);//replace the info and give them key in string
+			this.graph.put(key,f);
+			countermc++;
+			z++;
+			q="";
+		}
+	}
+
+	@Override
+	//this function doing connect
+	//the first if is to know if exist connect btween them
+	//then if not have connect we need to connect them
+	//the flag is to delete the nibiros that we dont need becasue if we dont put defulut is will trow you null exipthion
+	public void connect(int node1, int node2, double w) {
+		 //if is in the graph and have the age
+		 if(hasEdge(node1,node2)&&this.getNode(node1)!=null&&this.getNode(node2)!=null) {
+				this.neighbors.get(node1).replace(node2,this.getEdge(node1, node2), w);
+				this.neighbors.get(node2).replace(node1,this.getEdge(node1, node2), w);
+			}
+		 //if we dont have edge between the nodes
+		if(hasEdge(node1,node2)==false) {
+		HashMap<Integer,Double>nebors_node1=new HashMap<Integer,Double>();	
+		nebors_node1.putIfAbsent(node2, w);
+		
+		HashMap<Integer,Double>nebors_node2=new HashMap<Integer,Double>();
+		nebors_node2.putIfAbsent(node1, w);
+		//if node1 is exist and node 1 not exist we need to put them if not the input will be nullexption
+		if(this.neighbors.containsKey(node2)==true){
+			this.neighbors.get(node2).put(node1,w);
+			if(this.neighbors.containsKey(node1)==false){
+				this.neighbors.put(node1, nebors_node2);
+			}
+		}
+		//if node1 is exist and node 2 not exist we need to put them if not the input will be nullexption
+		if(this.neighbors.containsKey(node1)==true) {
+			this.neighbors.get(node1).put(node2, w);
+			if(this.neighbors.containsKey(node2)==false){
+				this.neighbors.put(node2, nebors_node1);
+			}
+			//if bouth noe exist we need to put them 
+		}else if(this.neighbors.containsKey(node1)==false&&this.neighbors.containsKey(node2)==false) {
+			this.neighbors.put(node2, nebors_node2);
+			this.neighbors.put(node1, nebors_node1);
+		}
+		}
+		countermc++;
+		edgeSize++; 
+	}
+	@Override
+	public Collection<node_info> getV() {
+	    return this.graph.values();
+	}
+	@Override
+	public Collection<node_info> getV(int node_id) {
+		if(!this.graph.containsKey(node_id)) {
+		return null;	
+		}
+		if(!this.neighbors.containsKey(node_id)) {
+			return null;
+		}
+		HashMap<Integer,node_info>f=new HashMap<Integer,node_info>();
+		    for (int z:this.neighbors.get(node_id).keySet()) {
+				f.put(z,this.getNode(z));
+			}  
+		    return f.values();
+		}
+	
+	@Override
+	public node_info removeNode(int key) {
+		if(!this.graph.containsKey(key)) {
+		return null;
+	     } 
+		for (int z:this.neighbors.get(key).keySet()) {
+			if(this.hasEdge(z, key)) {
+			this.neighbors.get(key).remove(z);
+			this.neighbors.get(z).remove(key);
+			}
+		}	
+		this.neighbors.remove(key);
+		countermc++;
+	   return this.graph.remove(key);
+	}
+	@Override
+	public void removeEdge(int node1, int node2) {
+		if(this.hasEdge(node1, node2)) {
+		this.neighbors.get(node1).remove(node2);
+		this.neighbors.get(node2).remove(node1);
+		countermc++;
+		edgeSize++;
+		}
+	}
+
+	public double getWight() {
+		return wight;
+	}
+
+	public void setWight(double wight) {
+		this.wight = wight;
+	}
+
+	@Override
+	public int nodeSize() {
+		return this.graph.size();
+	}
+
+	@Override
+	public int edgeSize() {
+		return edgeSize;
+	}
+
+	@Override
+	public int getMC() {
+		return countermc;
+	}
+	
+}
