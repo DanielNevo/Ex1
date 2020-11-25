@@ -242,7 +242,7 @@ public class WGraph_Algo implements weighted_graph_algorithms {
 			PrintWriter pw=new PrintWriter(new File("may include a relative path"));
 			for (node_info node: this.graph.getV()) {
 				int v=Integer.parseInt(node.getInfo());
-				String str=this.graph.getNode(v)+"---->";
+				String str=this.graph.getNode(v).getInfo()+"---->";
 				pw.write(str);
 			}
 			pw.close();
