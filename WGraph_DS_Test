@@ -1,0 +1,92 @@
+package Ex1;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+class WGraph_DS_Test {
+
+	@Test
+	void test_ADDNODE() {
+		WGraph_DS n=new WGraph_DS();
+		n.addNode(12);
+		n.addNode(13);
+		assertEquals(12,12);
+	}
+	@Test
+	void test_getnode() {
+		WGraph_DS n=new WGraph_DS();
+		n.addNode(12);
+		node_info z= n.getNode(12);	
+		assertEquals(n.getNode(12),z);
+	}
+	@Test
+	void test_hasEdge() {
+		WGraph_DS n=new WGraph_DS();
+			n.addNode(12);
+			n.addNode(13);
+			n.connect(12, 13, 2.2);
+	boolean f=n.hasEdge(12, 13);
+		assertEquals(true,f);
+	}
+	@Test
+	void test_connect() {
+		WGraph_DS n=new WGraph_DS();
+		n.addNode(12);
+		n.addNode(13);
+		n.connect(12, 13, 2.3);
+		assertEquals(2.3,n.getEdge(12, 13));
+	}
+	@Test
+	void test_removeNode() {
+		WGraph_DS n=new WGraph_DS();
+		n.addNode(12);
+		n.addNode(13);
+		n.connect(12, 13, 2.3);
+		n.removeNode(12);
+		assertEquals(false,n.graph.containsKey(12));
+	}
+	@Test
+	void test_removeEdge() {
+		WGraph_DS n=new WGraph_DS();
+		n.addNode(12);
+		n.addNode(13);
+		n.connect(12, 13, 2.3);
+		n.removeEdge(12,13);
+		assertEquals(false,n.hasEdge(12, 13));
+	}
+	
+	@Test
+	void test_collection() {
+	WGraph_DS n=new WGraph_DS();
+	n.addNode(12);
+		n.addNode(13);
+		n.connect(12, 13, 2.3);
+		n.removeEdge(12,13);
+		assertEquals(2,n.getV().size());
+	}
+	@Test
+    void hasEdge() {
+		WGraph_DS n=new WGraph_DS();
+        n.addNode(0);
+        n.addNode(1);
+        n.addNode(2);
+        assertEquals(false,n.hasEdge(1,0));
+        n.connect(0,1,6.0);
+        assertEquals(true,n.hasEdge(1,0));
+
+    }
+
+    @Test
+    void getEdge1() {
+    	WGraph_DS n=new WGraph_DS();
+        n.addNode(0);
+        n.addNode(1);
+        n.addNode(2);
+        n.connect(0,1,2);
+         assertEquals(2,n.getEdge(0,1));
+         assertEquals(-1,n.getEdge(1,2));
+
+    }
+}
+
