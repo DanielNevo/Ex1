@@ -1,0 +1,52 @@
+package Ex1;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+class WGraph_Algo_Test {
+
+	@Test
+	void test_init() {
+		WGraph_DS n=new WGraph_DS();
+		WGraph_Algo w=new WGraph_Algo(n);
+		assertNotEquals(0,w);
+	}
+	@Test
+	void test_init_1() {
+		WGraph_DS n=new WGraph_DS();
+		WGraph_Algo w=new WGraph_Algo(n);
+		assertNotEquals(null,w);
+	}
+	@Test
+	void isConnected() {
+		WGraph_DS n=new WGraph_DS();
+		WGraph_Algo w=new WGraph_Algo(n);
+		n.addNode(10);
+		n.addNode(12);
+		n.addNode(13);
+		n.addNode(14);
+		n.connect(10,12,1.1);
+		n.connect(12, 13, 2.2);
+		n.connect(13, 14,2.2);
+		assertEquals(true,w.isConnected());
+	}
+	@Test
+	void test_shortestPathDist() {
+		WGraph_DS n=new WGraph_DS();
+		WGraph_Algo w=new WGraph_Algo(n);
+		n.addNode(10);
+		n.addNode(12);
+		n.connect(10, 12, 2.2);
+		assertEquals(2.2,w.shortestPathDist(10,12));
+	}
+	@Test
+	void test_shortestPathDist_List() {
+		WGraph_DS n=new WGraph_DS();
+		WGraph_Algo w=new WGraph_Algo(n);
+		n.addNode(10);
+		n.addNode(12);
+		n.connect(10, 12, 2.2);
+		assertNotEquals(null,w.shortestPath(10,12));
+	}
+}
