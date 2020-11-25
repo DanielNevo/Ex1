@@ -73,9 +73,21 @@ public class WGraph_DS implements weighted_graph  {
 	
 	@Override
 	public node_info getNode(int key) {
+		 if(key==0) {
+			node_info z;
+			String s="";
+		    s+=0;
+			for (node_info node:this.graph.values()) {
+				if(node.getInfo().equals(s)) {
+					z=node;
+					return z;
+				}
+			}
+		}
 		if(this.graph.containsKey(key)) {
 			return this.graph.get(key);  
 		}
+		
 		return null;
 	}
 	@Override
